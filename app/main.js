@@ -11,7 +11,7 @@ const server = net.createServer((connection) => {
 
         if(cmd.length > 0 && cmd[0].toLowerCase() === 'echo') {
             const EchoStr = cmd[1];
-            const response = JSON.stringify(`$${EchoStr.length}\r\n${EchoStr}\r\n`);
+            const response = `$${EchoStr.length}\r\n${EchoStr}\r\n`;
             connection.write(response);
         }
         else

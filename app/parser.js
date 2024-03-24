@@ -34,12 +34,12 @@ class ReqParser {
 
     readNum() {
         let num = 0;
-        while (this.curr() !== '\\') {
+        while (this.curr() !== '\r') {
             num = num * 10 + (this.curr() - "0"); // i/p is in string
             this.cursor++;
         }
 
-        this.cursor += 4; // to skip \r\n
+        this.cursor += 2; // to skip \r\n
         return num;
     }
 
@@ -56,7 +56,7 @@ class ReqParser {
             throw new ReqParser.PartialRequestError();
         }
         let str = this.request.slice(this.cursor, this.cursor + lenOfStr);
-        this.cursor += lenOfStr + 4;
+        this.cursor += lenOfStr + 2;
         return str;
     }
 
