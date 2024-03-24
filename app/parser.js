@@ -1,6 +1,12 @@
 const assert = require('assert');
 
 class ReqParser {
+    static PartialRequestError = class PartialRequestError extends Error {
+        constructor() {
+            super("Index out of bound while parsing request");
+            this.name = "Partial Request";
+        }
+    }
     constructor(data) {
         this.request = data;
         this.cursor = 0;
@@ -12,9 +18,9 @@ class ReqParser {
         try {
             assert.equal(this.curr(), '*', 'Req should be started with *');
             this.cursor++;
-            this.numOfArgs = this.readNum();
+            let numOfArgs = this.readNum();
 
-            for(let i=0; i<this.numOfArgs; i++) {
+            for (let i = 0; i < numOfArgs; i++) {
                 this.args.push(this.readBulkString());
             }
         } catch (error) {
@@ -28,12 +34,12 @@ class ReqParser {
 
     readNum() {
         let num = 0;
-        while (this.curr() !== "\r") {
+        while (this.curr() !== '\\') {
             num = num * 10 + (this.curr() - "0"); // i/p is in string
             this.cursor++;
         }
 
-        this.cursor += 2; // to skip \r\n
+        this.cursor += 4; // to skip \r\n
         return num;
     }
 
@@ -46,12 +52,18 @@ class ReqParser {
     }
 
     getString(lenOfStr) {
+        if (this.request.length < this.cursor + lenOfStr) {
+            throw new ReqParser.PartialRequestError();
+        }
         let str = this.request.slice(this.cursor, this.cursor + lenOfStr);
-        this.cursor += lenOfStr + 2;
+        this.cursor += lenOfStr + 4;
         return str;
     }
 
     curr() {
+        if (this.cursor < 0 || this.cursor >= this.request.length) {
+            throw new ReqParser.PartialRequestError();
+        }
         return this.request[this.cursor];
     }
 }
