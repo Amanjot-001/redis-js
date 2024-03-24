@@ -28,6 +28,7 @@ class ReqParser {
             this.args = [];
         }
         finally {
+            console.log(this.args)
             return this.args;
         }
     }
