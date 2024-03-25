@@ -48,6 +48,18 @@ const server = net.createServer((connection) => {
                     connection.write(response);
                     break;
 
+                case 'info':
+                    var argument = commands[1].toLowerCase();
+                    if (argument === 'replication') {
+                        const heading = '# Replication';
+                        const role = 'role:master';
+                        response = `$${role.length}\r\n${role}\r\n`;
+                        connection.write(response);
+                    }
+                    else
+                        connection.write('+PONG\r\n');
+                    break;
+
                 default:
                     connection.write('+PONG\r\n');
             }
@@ -57,6 +69,4 @@ const server = net.createServer((connection) => {
     });
 });
 
-server.listen(port, "127.0.0.1", () => {
-    console.log('running on port:', port)
-});
+server.listen(port, "127.0.0.1");
