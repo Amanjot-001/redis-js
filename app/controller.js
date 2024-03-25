@@ -41,7 +41,7 @@ class Controller {
                 }
                 var keyStr = commands[1];
                 var object = this.store.get(keyStr);
-                if (object !== null && (object.expiration === -1 || object.expiration > new Date().getTime())) {
+                if (object !== undefined && (object.expiration === -1 || object.expiration > new Date().getTime())) {
                     response = `$${object.value.length}\r\n${object.value}\r\n`;
                 } else {
                     response = '$-1\r\n';

@@ -12,9 +12,9 @@ class Storage {
 
     get(key) {
         const response = this.store[key];
-        if(response.expiration !== -1 && response.expiration < new Date().getTime()) {
+        if(response && response.expiration !== -1 && response.expiration < new Date().getTime()) {
             this.delete(key);
-            return null;
+            return undefined;
         }
         return response;
     }
