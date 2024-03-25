@@ -1,7 +1,12 @@
-class AppError extends error {
-    constructor(message) {
-        super(message);
-    }
-};
+const wrongNoOfArgs = (command) => {
+    return `wrong number of arguments for '${command}' command`;
+}
 
-module.exports = AppError;
+const syntaxError = (command) => {
+    return `syntax error`;
+}
+
+module.exports = {
+    wrongNoOfArgs,
+    syntaxError
+}

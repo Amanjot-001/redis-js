@@ -1,4 +1,5 @@
 const Storage = require('./storage');
+const { wrongNoOfArgs, syntaxError } = require('./error')
 
 class Controller {
     constructor() {
@@ -14,6 +15,10 @@ class Controller {
                 break;
 
             case 'echo':
+                if (commands.length > 2) {
+                    response = `-ERR ${wrongNoOfArgs(commands[0])}\r\n`;
+                    break;
+                }
                 const EchoStr = commands[1];
                 response = `$${EchoStr.length}\r\n${EchoStr}\r\n`;
                 break;
@@ -30,6 +35,10 @@ class Controller {
                 break;
 
             case 'get':
+                if (commands.length > 2) {
+                    response = `-ERR ${wrongNoOfArgs(commands[0])}\r\n`;
+                    break;
+                }
                 var keyStr = commands[1];
                 var object = this.store.get(keyStr);
                 if (object !== null && (object.expiration === -1 || object.expiration > new Date().getTime())) {
@@ -49,7 +58,12 @@ class Controller {
                 break;
 
             default:
-                response = '+err\r\n';
+                const args = [];
+                for (let i = 1; i < commands.length; i++) {
+                    args.push(commands[i]);
+                }
+                response = `-ERR unknown command '${commands[0]}', with args beginning with: ${args.join(', ')}\r\n`;
+                break;
         }
 
         return response;
