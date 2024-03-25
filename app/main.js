@@ -3,7 +3,10 @@ const ReqParser = require('./parser');
 const Storage = require('./storage');
 const store = new Storage();
 
-console.log("Logs from your program will appear here!");
+// console.log("Logs from your program will appear here!");
+
+const portIndex = process.argv.findIndex(e => e.includes('--port'));
+const port = portIndex !== -1 ? process.argv[portIndex + 1] : 6379;
 
 const server = net.createServer((connection) => {
     connection.on('data', data => {
@@ -54,4 +57,6 @@ const server = net.createServer((connection) => {
     });
 });
 
-server.listen(6379, "127.0.0.1");
+server.listen(port, "127.0.0.1", () => {
+    console.log('running on port:', port)
+});
