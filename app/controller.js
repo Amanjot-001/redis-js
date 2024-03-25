@@ -11,7 +11,11 @@ class Controller {
 
         switch (commands[0].toLowerCase()) {
             case 'ping':
-                response = '+PONG\r\n';
+                if(commands.length > 2) {
+                    response = `-ERR ${wrongNoOfArgs(commands[0])}\r\n`;
+                    break;
+                }
+                response = commands[1] ? `+${commands[1]}\r\n` : '+PONG\r\n';
                 break;
 
             case 'echo':
