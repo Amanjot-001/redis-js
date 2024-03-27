@@ -6,7 +6,7 @@ class Controller {
         this.store = new Storage();
     }
 
-    handleReq(commands) {
+    handleReq(commands, role) {
         let response = '';
 
         switch (commands[0].toLowerCase()) {
@@ -56,8 +56,8 @@ class Controller {
                 var argument = commands[1].toLowerCase();
                 if (argument === 'replication') {
                     const heading = '# Replication';
-                    const role = 'role:master';
-                    response = `$${role.length}\r\n${role}\r\n`;
+                    const currentRole = `role:${role}`;
+                    response = `$${currentRole.length}\r\n${currentRole}\r\n`;
                 }
                 break;
 
