@@ -26,7 +26,9 @@ class Server {
 			port: this.port,
 			role: this.role,
 			master_replid: this.replid,
-			master_repl_offset: this.replOffset
+			master_repl_offset: this.replOffset,
+			masterHost: this.masterHost,
+			masterPort: this.masterPort
 		}
 	}
 }

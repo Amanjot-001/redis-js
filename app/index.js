@@ -8,6 +8,31 @@ const args = new Server().extractArgs();
 
 console.log("Logs from your program will appear here!");
 
+function pingServer(host, port) {
+	const client = new net.Socket();
+
+	client.on("error", (err) => {
+		console.error("Error connecting to master:", err);
+		client.destroy();
+	});
+
+	client.on("data", (data) => {
+		console.log("Received response from master:", data.toString());
+		client.end();
+	});
+
+	client.connect(port, host, () => {
+		console.log("Connected to master, sending PING command...");
+		const pingCommand = "*1\r\n$4\r\nPING\r\n";
+		client.write(pingCommand);
+	});
+}
+
+if (args.role === 'slave') {
+	console.log(args.masterHost, args.masterPort)
+	pingServer(args.masterHost, args.masterPort);
+};
+
 const server = net.createServer((connection) => {
 	connection.on('data', data => {
 		const request = data.toString().trim();
