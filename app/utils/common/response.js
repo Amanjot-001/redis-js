@@ -1,12 +1,12 @@
 const CRLF = require('./crlf');
 
-function genResponse(resArray) {
-	switch (resArray.length) {
-		case 1:
-			return `$${resArray[0].length}${CRLF}${resArray[0]}${CRLF}`;
-		default:
-			return '';
-	}
+function bulkString(resArray) {
+	const length = resArray.reduce((accumulator, currentValue) => accumulator + currentValue.length, 0);
+	return `$${length}${CRLF}${resArray.join(CRLF)}${CRLF}`;
+}
+
+function simpleString(resArray) {
+	return `+${resArray.join(' ')}${CRLF}`;
 }
 
 const OK = `+OK${CRLF}`;
@@ -15,4 +15,4 @@ const NULL = `$-1${CRLF}`;
 
 const PONG = `+PONG${CRLF}`;
 
-module.exports = { genResponse, OK, NULL, PONG };
+module.exports = { bulkString, simpleString, OK, NULL, PONG };

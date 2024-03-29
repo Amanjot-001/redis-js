@@ -20,7 +20,7 @@ const server = net.createServer((connection) => {
 });
 
 server.listen(redisServerMetadata.port, "127.0.0.1", () => {
-	console.log('server running on port:', redisServerMetadata.port);
+	console.log('0-server running on port:', redisServerMetadata.port);
 
 	if (redisServerMetadata.role === 'slave') {
 		handshake(redisServerMetadata);

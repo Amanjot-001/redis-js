@@ -18,7 +18,7 @@ class Controller {
 					break;
 				}
 
-				response = commands[1] ? RES.genResponse(commands.splice(1)) : RES.PONG;
+				response = commands[1] ? RES.bulkString(commands.splice(1)) : RES.PONG;
 				break;
 
 			case 'echo':
@@ -26,7 +26,7 @@ class Controller {
 					response = ERROR.wrongNoOfArgs(commands[0]);
 					break;
 				}
-				response = RES.genResponse(commands.splice(1));
+				response = RES.bulkString(commands.splice(1));
 				break;
 
 			case 'set':
@@ -48,7 +48,7 @@ class Controller {
 				var keyStr = commands[1];
 				var object = this.store.get(keyStr);
 				if (object !== undefined && (object.expiration === -1 || object.expiration > new Date().getTime())) {
-					response = RES.genResponse([object.value]);
+					response = RES.bulkString([object.value]);
 				} else {
 					response = RES.NULL;
 				}
@@ -90,7 +90,8 @@ class Controller {
 					response = ERROR.wrongNoOfArgs(commands[0]);
 					break;
 				}
-				response = RES.OK;
+				const resArray = ['FULLRESYNC', serverArgs.master_replid, serverArgs.master_repl_offset];
+				response = RES.simpleString(resArray);
 				break;
 
 			default:
