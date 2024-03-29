@@ -7,10 +7,6 @@ const handshake = require('./handshake.js');
 const controller = new Controller();
 const redisServerMetadata = new Server().extractArgs();
 
-if (redisServerMetadata.role === 'slave') {
-	handshake(redisServerMetadata);
-};
-
 const server = net.createServer((connection) => {
 	connection.on('data', data => {
 		const request = data.toString().trim();
@@ -25,4 +21,8 @@ const server = net.createServer((connection) => {
 
 server.listen(redisServerMetadata.port, "127.0.0.1", () => {
 	console.log('server running on port:', redisServerMetadata.port);
+
+	if (redisServerMetadata.role === 'slave') {
+		handshake(redisServerMetadata);
+	};
 });
