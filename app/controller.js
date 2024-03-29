@@ -1,6 +1,7 @@
 const Storage = require('./storage');
-const { wrongNoOfArgs, syntaxError } = require('./utils/errors/error');
+const { ERROR } = require('./utils/errors');
 const { CRLF } = require('./utils/common');
+const { RES } = require('./utils/common')
 
 class Controller {
 	constructor() {
@@ -13,19 +14,19 @@ class Controller {
 		switch (commands[0].toLowerCase()) {
 			case 'ping':
 				if (commands.length > 2) {
-					response = `-ERR ${wrongNoOfArgs(commands[0])}${CRLF}`;
+					response = ERROR.wrongNoOfArgs(commands[0]);
 					break;
 				}
-				response = commands[1] ? `$${commands[1].length}${CRLF}${commands[1]}${CRLF}` : `+PONG${CRLF}`;
+
+				response = commands[1] ? RES.genResponse(commands.splice(1)) : RES.PONG;
 				break;
 
 			case 'echo':
 				if (commands.length > 2) {
-					response = `-ERR ${wrongNoOfArgs(commands[0])}${CRLF}`;
+					response = ERROR.wrongNoOfArgs(commands[0]);
 					break;
 				}
-				const EchoStr = commands[1];
-				response = `$${EchoStr.length}${CRLF}${EchoStr}${CRLF}`;
+				response = RES.genResponse(commands.splice(1));
 				break;
 
 			case 'set':
@@ -36,20 +37,20 @@ class Controller {
 					expiration = new Date().getTime() + parseInt(commands[4]);
 				}
 				this.store.set(keyStr, valueStr, expiration);
-				response = `+OK${CRLF}`;
+				response = RES.OK;
 				break;
 
 			case 'get':
 				if (commands.length > 2) {
-					response = `-ERR ${wrongNoOfArgs(commands[0])}${CRLF}`;
+					response = ERROR.wrongNoOfArgs(commands[0]);;
 					break;
 				}
 				var keyStr = commands[1];
 				var object = this.store.get(keyStr);
 				if (object !== undefined && (object.expiration === -1 || object.expiration > new Date().getTime())) {
-					response = `$${object.value.length}${CRLF}${object.value}${CRLF}`;
+					response = RES.genResponse([object.value]);
 				} else {
-					response = `$-1${CRLF}`;
+					response = RES.NULL;
 				}
 				break;
 
@@ -67,29 +68,29 @@ class Controller {
 
 			case 'replconf':
 				if (commands.length !== 3) {
-					response = `-ERR ${wrongNoOfArgs(commands[0])}${CRLF}`;
+					response = ERROR.wrongNoOfArgs(commands[0]);
 					break;
 				}
 				if (commands[1].toLowerCase() === 'listening-port') {
 					if (parseInt(commands[2]) < 0 && parseInt(commands[2]) > 65535) {
-						response = `-ERR value is not an integer or out of range${CRLF}`;
+						response = ERROR.defaultError('value is not an integer or out of range');
 						break;
 					}
-					response = `+OK${CRLF}`;
+					response = RES.OK;
 				}
 				else if (commands[1].toLowerCase() === 'capa') {
-					response = `+OK${CRLF}`;
+					response = RES.OK;
 				}
 				else
-					response = `-ERR Unrecognized REPLCONF option: ${commands[1]}${CRLF}`;
+					response = ERROR.defaultError(`Unrecognized REPLCONF option: ${commands[1]}`)
 				break;
 
 			case 'psync':
 				if (commands.length !== 3) {
-					response = `-ERR ${wrongNoOfArgs(commands[0])}${CRLF}`;
+					response = ERROR.wrongNoOfArgs(commands[0]);
 					break;
 				}
-				response = `+OK${CRLF}`;
+				response = RES.OK;
 				break;
 
 			default:
@@ -97,7 +98,8 @@ class Controller {
 				for (let i = 1; i < commands.length; i++) {
 					args.push(commands[i]);
 				}
-				response = `-ERR unknown command '${commands[0]}', with args beginning with: ${args.join(', ')}${CRLF}`;
+				const errArray = [`unknown command '${commands[0]}', with args beginning with`, args.join(', ')];
+				response = ERROR.unknownCMD(errArray);
 				break;
 		}
 
