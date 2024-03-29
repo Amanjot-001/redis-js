@@ -5,6 +5,7 @@ function handshake(redisServerMetadata) {
 		ping: false,
 		replconfPort: false,
 		replconfCapa: false,
+		psync: false
 	};
 
 	const { masterHost: masterHost, masterPort: masterPort } = redisServerMetadata;
@@ -30,9 +31,16 @@ function handshake(redisServerMetadata) {
 					steps.replconfPort = true;
 					console.log('Sending REPLCONF capa psync2');
 					client.write(`*3\r\n$8\r\nREPLCONF\r\n$4\r\ncapa\r\n$6\r\npsync2\r\n`);
-				} else if (!steps.replconfCapa) {
+				}
+				else if (!steps.replconfCapa) {
 					console.log('Master replied to REPLCONF capa');
 					steps.replconfCapa = true;
+					console.log('Sending PSYNC ? -1');
+					client.write(`*3\r\n$5\r\nPSYNC\r\n$1\r\n?\r\n$2\r\n-1\r\n`);
+				}
+				else if (!steps.psync) {
+					console.log('Master replied to PSYNC');
+					steps.psync = true;
 					console.log('Handshake complete');
 					client.end();
 				}

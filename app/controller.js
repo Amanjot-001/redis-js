@@ -83,6 +83,14 @@ class Controller {
 					response = `-ERR Unrecognized REPLCONF option: ${commands[1]}\r\n`;
 				break;
 
+			case 'psync':
+				if (commands.length !== 3) {
+					response = `-ERR ${wrongNoOfArgs(commands[0])}\r\n`;
+					break;
+				}
+				response = '+OK\r\n';
+				break;
+
 			default:
 				const args = [];
 				for (let i = 1; i < commands.length; i++) {
