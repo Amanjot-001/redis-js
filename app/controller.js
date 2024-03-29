@@ -16,7 +16,7 @@ class Controller {
 					response = `-ERR ${wrongNoOfArgs(commands[0])}${CRLF}`;
 					break;
 				}
-				response = commands[1] ? `+${commands[1]}${CRLF}` : `+PONG${CRLF}`;
+				response = commands[1] ? `$${commands[1].length}${CRLF}${commands[1]}${CRLF}` : `+PONG${CRLF}`;
 				break;
 
 			case 'echo':
