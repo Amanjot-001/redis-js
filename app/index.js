@@ -2,35 +2,13 @@ const net = require("net");
 const ReqParser = require('./parser');
 const Controller = require('./controller');
 const Server = require('./server');
+const handshake = require('./handshake.js');
 
 const controller = new Controller();
-const args = new Server().extractArgs();
+const redisServerMetadata = new Server().extractArgs();
 
-console.log("Logs from your program will appear here!");
-
-function pingServer(host, port) {
-	const client = new net.Socket();
-
-	client.on("error", (err) => {
-		console.error("Error connecting to master:", err);
-		client.destroy();
-	});
-
-	client.on("data", (data) => {
-		console.log("Received response from master:", data.toString());
-		client.end();
-	});
-
-	client.connect(port, host, () => {
-		console.log("Connected to master, sending PING command...");
-		const pingCommand = "*1\r\n$4\r\nPING\r\n";
-		client.write(pingCommand);
-	});
-}
-
-if (args.role === 'slave') {
-	console.log(args.masterHost, args.masterPort)
-	pingServer(args.masterHost, args.masterPort);
+if (redisServerMetadata.role === 'slave') {
+	handshake(redisServerMetadata);
 };
 
 const server = net.createServer((connection) => {
@@ -39,10 +17,12 @@ const server = net.createServer((connection) => {
 		const parser = new ReqParser(request);
 		const commands = parser.parse();
 
-		const response = controller.handleReq(commands, args);
+		const response = controller.handleReq(commands, redisServerMetadata);
 
 		connection.write(response);
 	});
 });
 
-server.listen(args.port, "127.0.0.1");
+server.listen(redisServerMetadata.port, "127.0.0.1", () => {
+	console.log('server running on port:', redisServerMetadata.port);
+});

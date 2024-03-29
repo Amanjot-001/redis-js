@@ -18,7 +18,7 @@ class Server {
 		this.port = portIndex !== -1 ? process.argv[portIndex + 1] : 6379;
 
 		const replicaIndex = process.argv.findIndex(e => e.includes('--replicaof'));
-		this.masterHost = replicaIndex !== 1 ? process.argv[replicaIndex + 1] : null;
+		this.masterHost = replicaIndex !== -1 ? process.argv[replicaIndex + 1] : null;
 		this.masterPort = replicaIndex !== -1 ? process.argv[replicaIndex + 2] : null;
 		this.role = (this.masterHost && this.masterPort) ? 'slave' : 'master';
 

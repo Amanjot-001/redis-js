@@ -64,6 +64,25 @@ class Controller {
 				}
 				break;
 
+			case 'replconf':
+				if (commands.length !== 3) {
+					response = `-ERR ${wrongNoOfArgs(commands[0])}\r\n`;
+					break;
+				}
+				if (commands[1].toLowerCase() === 'listening-port') {
+					if (parseInt(commands[2]) < 0 && parseInt(commands[2]) > 65535) {
+						response = `-ERR value is not an integer or out of range\r\n`;
+						break;
+					}
+					response = '+OK\r\n';
+				}
+				else if (commands[1].toLowerCase() === 'capa') {
+					response = '+OK\r\n';
+				}
+				else
+					response = `-ERR Unrecognized REPLCONF option: ${commands[1]}\r\n`;
+				break;
+
 			default:
 				const args = [];
 				for (let i = 1; i < commands.length; i++) {
