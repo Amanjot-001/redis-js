@@ -1,7 +1,7 @@
 const CRLF = require('./crlf');
 
 function bulkString(resArray) {
-	const length = resArray.reduce((accumulator, currentValue) => accumulator + currentValue.length, 0);
+	const length = resArray.reduce((accumulator, currentValue) => accumulator + currentValue.length, 0) + (resArray.length-1) * 2;
 	return `$${length}${CRLF}${resArray.join(CRLF)}${CRLF}`;
 }
 

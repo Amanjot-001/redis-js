@@ -61,8 +61,9 @@ class Controller {
 					const currentRole = `role:${serverArgs.role}`;
 					const replid = `master_replid:${serverArgs.master_replid}`;
 					const replOffset = `master_repl_offset:${serverArgs.master_repl_offset}`;
-					const totalLength = heading.length + currentRole.length + replid.length + replOffset.length + 6;
-					response = `$${totalLength}${CRLF}${heading}${CRLF}${currentRole}${CRLF}${replid}${CRLF}${replOffset}${CRLF}`;
+
+					const resArray = [heading, currentRole, replid, replOffset];
+					response = RES.bulkString(resArray);
 				}
 				break;
 
