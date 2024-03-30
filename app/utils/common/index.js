@@ -1,4 +1,5 @@
 module.exports = {
 	CRLF: require('./crlf'),
-	RES: require('./response')
+	RES: require('./response'),
+	REQ: require('./request')
 }
