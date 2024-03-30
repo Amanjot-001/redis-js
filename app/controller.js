@@ -1,7 +1,6 @@
 const Storage = require('./storage');
 const { ERROR } = require('./utils/errors');
-const { CRLF } = require('./utils/common');
-const { RES } = require('./utils/common')
+const { CRLF, RES, CONSTANTS } = require('./utils/common');
 
 class Controller {
 	constructor() {
@@ -10,6 +9,7 @@ class Controller {
 
 	handleReq(commands, serverArgs) {
 		let response = '';
+		let resArray = '';
 
 		switch (commands[0].toLowerCase()) {
 			case 'ping':
@@ -62,7 +62,7 @@ class Controller {
 					const replid = `master_replid:${serverArgs.master_replid}`;
 					const replOffset = `master_repl_offset:${serverArgs.master_repl_offset}`;
 
-					const resArray = [heading, currentRole, replid, replOffset];
+					resArray = [heading, currentRole, replid, replOffset];
 					response = RES.bulkString(resArray);
 				}
 				break;
@@ -91,7 +91,7 @@ class Controller {
 					response = ERROR.wrongNoOfArgs(commands[0]);
 					break;
 				}
-				const resArray = ['FULLRESYNC', serverArgs.master_replid, serverArgs.master_repl_offset];
+				resArray = ['FULLRESYNC', serverArgs.master_replid, serverArgs.master_repl_offset];
 				response = RES.simpleString(resArray);
 				break;
 

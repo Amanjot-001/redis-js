@@ -3,6 +3,7 @@ const ReqParser = require('./parser');
 const Controller = require('./controller');
 const Server = require('./server');
 const handshake = require('./handshake.js');
+const { CONSTANTS, CRLF } = require('./utils/common')
 
 const controller = new Controller();
 const redisServerMetadata = new Server().extractArgs();
@@ -16,6 +17,12 @@ const server = net.createServer((connection) => {
 		const response = controller.handleReq(commands, redisServerMetadata);
 
 		connection.write(response);
+
+		if (commands[0] === 'PSYNC' && !response.includes('-ERR')) {
+			const rdbBinary = Buffer.from(CONSTANTS.rdbBase64, 'base64');
+			const rdb = Buffer.concat([Buffer.from(`$${rdbBinary.length}${CRLF}`), rdbBinary]);
+			connection.write(rdb);
+		}
 	});
 });
 
