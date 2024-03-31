@@ -49,7 +49,7 @@ function handshake(redisServerMetadata) {
 			}
 			else if (steps.psync && Buffer.isBuffer(data)) {
 				console.log('12-received rdb file');
-				client.end();
+				// client.end();
 			}
 			else {
 				console.log('ERROR occured while handshaking')
