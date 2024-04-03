@@ -1,6 +1,5 @@
 const net = require('net');
-const { CRLF } = require('./utils/common');
-const { REQ } = require('./utils/common')
+const { CRLF, REQ, RES } = require('./utils/common');
 
 function handshake(redisServerMetadata) {
 	const steps = {
@@ -21,14 +20,14 @@ function handshake(redisServerMetadata) {
 		client.on('data', (data) => {
 			const response = data.toString();
 
-			if (response === `+PONG${CRLF}`) {
+			if (response === RES.PONG) {
 				console.log('4-Master replied to syn PING');
 				steps.ping = true;
 				console.log('5-Sending REPLCONF listening-port', redisServerMetadata.port);
 				client.write(REQ.Arrays(['REPLCONF', 'listening-port', redisServerMetadata.port]))
 			}
 
-			else if (response === `+OK${CRLF}`) {
+			else if (response === RES.OK) {
 				if (!steps.replconfPort) {
 					console.log('6-Master replied to REPLCONF');
 					steps.replconfPort = true;
@@ -42,7 +41,7 @@ function handshake(redisServerMetadata) {
 					client.write(REQ.Arrays(['PSYNC', '?', '-1']));
 				}
 			}
-			else if (response === `+FULLRESYNC ${redisServerMetadata.master_replid} ${redisServerMetadata.master_repl_offset}${CRLF}`) {
+			else if (response === RES.simpleString(['FULLRESYNC', redisServerMetadata.master_replid, redisServerMetadata.master_repl_offset])) {
 				console.log('10-Master replied to PSYNC');
 				steps.psync = true;
 				console.log('11-Handshake complete');
