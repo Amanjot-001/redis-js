@@ -18,7 +18,7 @@ const server = net.createServer((connection) => {
 
 		connection.write(response);
 
-		if (commands[0] === 'PSYNC' && !response.includes('-ERR')) {
+		if (commands[0] === 'PSYNC' && !response.includes('-ERR') && redisServerMetadata.role === 'master') {
 			const rdbBinary = Buffer.from(CONSTANTS.rdbBase64, 'base64');
 			const rdb = Buffer.concat([Buffer.from(`$${rdbBinary.length}${CRLF}`), rdbBinary]);
 			connection.write(rdb);
